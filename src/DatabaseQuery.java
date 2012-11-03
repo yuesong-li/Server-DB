@@ -9,6 +9,7 @@ public class DatabaseQuery {
      * of the project. Requires updates for further development of the project.
      */
 
+    String test = "test for first commit";
     public void updateDataBase(String device, String state) {
         try {
             Class.forName("com.mysql.jdbc.Driver");
