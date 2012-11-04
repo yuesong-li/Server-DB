@@ -49,4 +49,28 @@ public class DatabaseQuery {
         }
         return dbResponse;
     }
+
+    public String validateUser(String user, String pass) {
+		String dbUser = null, dbPass = null;
+		try {
+			Class.forName("com.mysql.jdbc.Driver");
+			String url = "jdbc:mysql://127.0.0.1/interactive_house?user=root&password=";
+			Connection con = DriverManager.getConnection(url);
+			Statement st = con.createStatement();
+			
+			String query = "SELECT username, password FROM users WHERE username='"+ user +"'";
+			ResultSet rs = st.executeQuery(query);
+			while(rs.next()) {
+				dbUser = rs.getString("username");
+				dbPass = rs.getString("password");
+			}
+			System.out.println("Result from db : " + dbUser + " " + dbPass);
+			if(user.equals(dbUser) && pass.equals(dbPass)) {
+				return "Pass";
+			}
+		} catch (Exception e) {
+			System.out.println("Error encountered. : " + e.getMessage());
+		}
+		return "Fail";
+	}
 }
