@@ -5,6 +5,8 @@ import java.io.ObjectInputStream;
 import java.io.PrintWriter;
 import java.net.Socket;
 
+import src.DatabaseQuery;
+
 /*
  *************************************************************************
  * Authors : Mathias Olsson, Hanna Persson, Zakir Hossain
@@ -56,7 +58,7 @@ public class Server extends Thread {
 			pw.println(dbResponse);
 			while (true) {
 				String unitRequest = br.readLine();
-				identifyRequest(unitRequest);
+				verifyRequest(unitRequest);
 			}
 		} catch (IOException e) {
 			System.out.println("Failed in creating streams!");
@@ -81,13 +83,18 @@ public class Server extends Thread {
 			pw.println("Validation successful.");
 		}
 	}
-
-	private void identifyRequest(String unitRequest) {
+    /*
+     * I m not sure we r going to use this method or not 
+     * I am just puting it on comments now. 
+     * And adding my new method instead of it.
+     */
+	
+  /*	private void identifyRequest(String unitRequest) {
 		if (unitRequest.contains("Light") || unitRequest.contains("LIGHT")
 				|| unitRequest.contains("light")) {
-			/*
+			
 			 * Now we know which device we are supposed to send the command to.
-			 */
+			 
 			// this.unitRequest = unitRequest.split(":");
 			// device = this.unitRequest[0];
 			// command = this.unitRequest[1];
@@ -100,6 +107,35 @@ public class Server extends Thread {
 				|| unitRequest.contains("otherdevice")) {
 			// do something
 		}
+	} */
+	
+	/*
+	 * 
+	 * This method will verify the unit request is  necessary or not
+	 * get the request from unit-client  
+	 * compare it with database 
+	 * if same data found send a error message to unit and discard request else send request to device
+	 */
+	private void verifyRequest(String unitRequest) {
+		//if (unitRequest.contains("Lamp") || unitRequest.contains("LAMP")|| unitRequest.contains("lamp")) {
+			/*
+			 * Now we know which device we are supposed to send the command to.
+			 */
+			this.unitRequest = unitRequest.split(":");
+			device = this.unitRequest[0].trim();
+			command = this.unitRequest[1].trim();
+			DatabaseQuery dbq = new DatabaseQuery();
+			for(int i =0; i< dbq.readFromDatabase().size(); i++){
+				String[] deviceinfo = ((String) dbq.readFromDatabase().get(i)).split(":");	
+				if(device.equals(deviceinfo[0].trim()) && command.equals(deviceinfo[1].trim())){
+					System.out.println("This command is already executed on devices");
+					pw.println("This command is already executed on devices");
+				}else if(device.equals(deviceinfo[0].trim()) && command != (deviceinfo[1].trim())){
+					System.out.println("Unit received following from server : " + unitRequest);
+					mts.sendToDevice(unitRequest);
+				}		
+			
+			}
 	}
 
 	public void receiveAndSendResponseFromDevice(String deviceAnswer) {

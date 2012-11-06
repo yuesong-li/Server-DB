@@ -5,6 +5,8 @@ import java.sql.Statement;
 import java.sql.DriverManager;
 import java.util.ArrayList;
 
+import src.Server;
+
 /*
  **********************************************************************************************
  * Authors : Mathias Olsson, Hanna Persson, Zakir Hossain
@@ -81,6 +83,7 @@ public class MultiThreadedServer extends Thread {
 					System.out.println("\nServer running on "
 							+ InetAddress.getLocalHost()
 							+ "\nAwaiting unit-client connection.. .. ..");
+					
 				}
 				/*
 				 * Following segment of code covers event : Unit connects to
@@ -91,8 +94,16 @@ public class MultiThreadedServer extends Thread {
 					unitClientSocket = unitServerSocket.accept();
 					System.out.println("Client accepted. Client : "
 							+ unitClientSocket.getRemoteSocketAddress());
-					Server server = new Server(unitClientSocket, this,
-							dbq.readFromDatabase());
+					/*
+					 * To retrieve the all devices status from arrayList and store it on a String
+					 *  dbq.readFromDatabase() return a arraylist we have to add it on a string 
+					 *  And send it to all unit client
+					 */
+					String devicesstatus = (String) dbq.readFromDatabase().get(0);
+					for(int i =1; i< dbq.readFromDatabase().size(); i++){
+						devicesstatus = devicesstatus + "," + (String) dbq.readFromDatabase().get(i);
+					}
+					Server server = new Server(unitClientSocket, this, devicesstatus);
 					server.start();
 					threadList.add(server);
 				}
@@ -105,6 +116,7 @@ public class MultiThreadedServer extends Thread {
 	}
 
 	/*
+	 * 
 	 * Receiving the information on the current devices from the device-client.
 	 * Also overwrites the database with the newest information/states.
 	 */
@@ -113,12 +125,17 @@ public class MultiThreadedServer extends Thread {
 			String deviceMessage, device, state;
 			deviceMessage = deviceReader.readLine();
 			System.out.println("Received from deviceClient : " + deviceMessage);
-
-			String[] deviceMessageArray = deviceMessage.split(":");
-			device = deviceMessageArray[0];
-			state = deviceMessageArray[1];
-
-			dbq.updateDataBase(device, state);
+			String[] allDevicesStatus = null;
+			 allDevicesStatus = deviceMessage.split(",");
+			for(int i = 0; i<allDevicesStatus.length;i++){
+				//String[] deviceMessageArray = deviceMessage.split(":");
+				String deviceStatus = allDevicesStatus[i];
+				String[] deviceMessageArray = deviceStatus.split(":");
+				device = deviceMessageArray[0];
+				state = deviceMessageArray[1];
+				dbq.updateDataBase(device, state);
+			}
+			
 		} catch (IOException e) {
 			System.out.println("Failed to read from devices.");
 			System.out.println(e.getMessage());
@@ -148,14 +165,23 @@ public class MultiThreadedServer extends Thread {
 	 * OPTIONAL REQUIREMENT : Priority queue (Desirable)
 	 */
 	public synchronized void sendToDevice(String unitRequest) {
-		System.out.println("Method:sendToDevice : Message from server-thread : " + unitRequest + ".");
+		System.out.println("Message from server-thread : " + unitRequest + ".");
 		deviceWriter.println(unitRequest);
 		try {
 			String deviceAnswer = deviceReader.readLine();
-			if (deviceAnswer != null && deviceAnswer.equals(unitRequest)) {
+			if(deviceAnswer != null && deviceAnswer.equals(unitRequest)) {
 				/*
 				 * The command was successfully executed on the device.
+				 * SO server should update new state of devices to database its read the message and split it and 
+				 * update it to database. 
+				 * 
 				 */
+				String  device, state;
+				String[] deviceMessageArray = deviceAnswer.split(":");
+				device = deviceMessageArray[0];
+				state = deviceMessageArray[1];
+				dbq.updateDataBase(device, state);
+				
 				System.out.println("Sending to all servers.");
 				sendToAllServerThreads(deviceAnswer);
 			}
