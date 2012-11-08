@@ -1,20 +1,71 @@
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class DatabaseQuery {
-    /*
+ 
+     /*
+     * Simplified method for Creating database, 
+     * This method will check for database on localhost. if its find the database will work normally. 
+     * otherwise it will create a database with table and data.
+     */
+    public void createDatabase() {
+        try {
+            Class.forName("com.mysql.jdbc.Driver");
+            //String url = "jdbc:mysql://127.0.0.1/interactive_house?user=root&password=";
+            Connection con = DriverManager.getConnection("jdbc:mysql://127.0.0.1/?user=root&password=");
+            ResultSet resultSet = con.getMetaData().getCatalogs();
+            boolean check = false;
+            while (resultSet.next()) {
+                // Get the database name                
+                //databaseName.add(resultSet.getString(1));
+                if (resultSet.getString(1).equals("interactive_house")) {
+                    System.out.println("Database exists");
+                    check = true;
+                }
+
+            }
+            if (check == false) {
+                Statement st = con.createStatement();
+                String query = "CREATE DATABASE  IF NOT EXISTS interactive_house";
+                st.executeUpdate(query);
+                System.out.println("Database Created");
+                con = DriverManager.getConnection("jdbc:mysql://127.0.0.1/interactive_house?user=root&password=");
+                st = con.createStatement();
+                query = "CREATE TABLE IF NOT EXISTS `devices` (`deviceId` int(20) NOT NULL,`deviceName` varchar(40) NOT NULL,`deviceState` varchar(40) NOT NULL, PRIMARY KEY (`deviceId`))";
+                st.executeUpdate(query);
+                System.out.println("Table Created");
+                query = "SELECT * FROM devices";
+                ResultSet rs = st.executeQuery(query);
+                if (!rs.next()) {
+                    query = "INSERT INTO `devices` VALUES (1,'lightIn','on'),(2,'lightOut','on'),(3,'fan','off'),(4,'heating','off'),(5,'door','open'),(6,'stove','off'),(7,'coffee','off'),(8,'bath','on')";
+                    st.executeUpdate(query);
+                    System.out.println("Data Inserted");
+                }
+            }
+
+            resultSet.close();
+            con.close();
+        } catch (ClassNotFoundException ex) {
+            Logger.getLogger(DatabaseQuery.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (SQLException ex) {
+            Logger.getLogger(DatabaseQuery.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+
+       /*
      * Simplified method for updating database, only works in the current state
      * of the project. Requires updates for further development of the project.
      */
-
-    String test = "test for first commit";
     public void updateDataBase(String device, String state) {
         try {
             Class.forName("com.mysql.jdbc.Driver");
-            String url = "jdbc:mysql://127.0.0.1/interactive_house?user=root&password=root";
+            String url = "jdbc:mysql://127.0.0.1/interactive_house?user=root&password=";
             Connection con = DriverManager.getConnection(url);
             Statement st = con.createStatement();
             String query = "UPDATE devices SET deviceState='" + state
@@ -34,7 +85,7 @@ public class DatabaseQuery {
      */
     public ArrayList readFromDatabase() {
 		String dbResponse = null, name = null, state = null;
-		ArrayList<String> dbResponseArray = new ArrayList<>();
+		ArrayList<String> dbResponseArray = new ArrayList<String>();
 		try {
 			Class.forName("com.mysql.jdbc.Driver");
 			String url = "jdbc:mysql://127.0.0.1/interactive_house?user=root&password=";

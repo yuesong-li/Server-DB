@@ -5,7 +5,6 @@ import java.sql.Statement;
 import java.sql.DriverManager;
 import java.util.ArrayList;
 
-import src.Server;
 
 /*
  **********************************************************************************************
@@ -38,6 +37,7 @@ public class MultiThreadedServer extends Thread {
 
 	public MultiThreadedServer() {
 		threadList = new ArrayList<Server>();
+                dbq.createDatabase();
 	}
 
 	public void run() {
