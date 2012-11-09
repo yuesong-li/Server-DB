@@ -108,7 +108,7 @@ public class DatabaseQuery {
 		return dbResponseArray;
 	}
 
- //hejsan
+
     public String validateUser(String user, String pass) {
 		String dbUser = null, dbPass = null;
 		try {
