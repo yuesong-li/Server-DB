@@ -20,6 +20,8 @@ public class DatabaseQuery {
             //String url = "jdbc:mysql://127.0.0.1/interactive_house?user=root&password=";
             Connection con = DriverManager.getConnection("jdbc:mysql://127.0.0.1/?user=root&password=");
             ResultSet resultSet = con.getMetaData().getCatalogs();
+            Statement st = con.createStatement();
+            String query;
             boolean check = false;
             while (resultSet.next()) {
                 // Get the database name                
@@ -30,16 +32,16 @@ public class DatabaseQuery {
                 }
 
             }
-            if (check == false) {
-                Statement st = con.createStatement();
-                String query = "CREATE DATABASE  IF NOT EXISTS interactive_house";
+            if (check == false) {                
+                query = "CREATE DATABASE  IF NOT EXISTS interactive_house";
                 st.executeUpdate(query);
                 System.out.println("Database Created");
+            }
                 con = DriverManager.getConnection("jdbc:mysql://127.0.0.1/interactive_house?user=root&password=");
                 st = con.createStatement();
                 query = "CREATE TABLE IF NOT EXISTS `devices` (`deviceId` int(20) NOT NULL,`deviceName` varchar(40) NOT NULL,`deviceState` varchar(40) NOT NULL, PRIMARY KEY (`deviceId`))";
                 st.executeUpdate(query);
-                System.out.println("Table Created");
+                System.out.println("Devices Table Created");
                 query = "SELECT * FROM devices";
                 ResultSet rs = st.executeQuery(query);
                 if (!rs.next()) {
@@ -47,7 +49,17 @@ public class DatabaseQuery {
                     st.executeUpdate(query);
                     System.out.println("Data Inserted");
                 }
-            }
+                query = "CREATE TABLE IF NOT EXISTS `users` (`userid` int(10) NOT NULL AUTO_INCREMENT,`username` varchar(25) DEFAULT NULL,`password` varchar(25) DEFAULT NULL, `access` varchar(25) DEFAULT NULL,PRIMARY KEY (`userid`))";
+                st.executeUpdate(query);
+                System.out.println("User Table Created");
+                query = "SELECT * FROM users";
+                rs = st.executeQuery(query);
+                if (!rs.next()) {
+                    query = "INSERT INTO `users` (`userid`, `username`, `password`, `access`) VALUES (1, 'HouseMaster', 'HouseMaster', 'admin'),(2, 'HousePerson', 'HousePerson', 'low'), (3, 'AnotherPerson', 'AnotherPerson', 'high')";
+                    st.executeUpdate(query);
+                    System.out.println("Data Inserted in users Table");
+                }
+            
 
             resultSet.close();
             con.close();
