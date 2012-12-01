@@ -27,7 +27,7 @@ public class Server extends Thread {
 	PrintWriter pw = null;
 	String[] unitRequest = null;
 	String device, command, dbResponse;
-
+        String userAndPass= null;
 	/*
 	 * Take the socket that was connected to the multi-threaded server and save
 	 * it so that we can use it. And save a reference to the multi-threaded
@@ -51,7 +51,7 @@ public class Server extends Thread {
 			pw = new PrintWriter(clientSocket.getOutputStream(), true);
 			System.out.println("Server is sending to UNIT : " + dbResponse);
 			//UserAndPass is the received username&password from the client.
-			String userAndPass = br.readLine();
+			userAndPass = br.readLine();
 			validateUser(userAndPass);
 			//dbResponse is the current deviceInformation in the database
 			pw.println(dbResponse);
@@ -131,7 +131,9 @@ public class Server extends Thread {
 					pw.println("This command is already executed on devices");
 				}else if(device.equals(deviceinfo[0].trim()) && command != (deviceinfo[1].trim())){
 					System.out.println("Unit received following from server : " + unitRequest);
-					mts.sendToDevice(unitRequest);
+                                      readOrWrite row = new readOrWrite();
+                                      row.writeToFile(userAndPass, unitRequest);
+				      mts.sendToDevice(unitRequest);
 				}		
 			
 			}
