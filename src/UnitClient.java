@@ -64,8 +64,8 @@ public class UnitClient {
 	}
 	
 	private static void sendUserPass() {
-		String sendUser = "username";
-		String sendPass = "password";
+		String sendUser = "HousePerson";
+		String sendPass = "HousePerson";
 		pw.println(sendUser+":"+sendPass);
 		try {
 			String answer = br.readLine();

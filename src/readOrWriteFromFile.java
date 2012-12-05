@@ -21,7 +21,7 @@ import java.util.Date;
  *
  * @author Hanna
  */
-public class readOrWrite {
+public class readOrWriteFromFile {
 // This class is under construction, will be more modified
     PrintWriter fstream = null;
     FileInputStream freader = null;
@@ -42,8 +42,8 @@ public class readOrWrite {
             String passWord = array[1];
 
 
-
-            File f = new File("out.txt");
+            System.out.println("IM here");
+            File f = new File("C:\\resultsFromUnit.txt");
             freader = new FileInputStream(f);
             dis = new DataInputStream(freader);
             brr = new BufferedReader(new InputStreamReader(dis));
@@ -51,11 +51,11 @@ public class readOrWrite {
             String save = "";
             while ((fromFile = brr.readLine()) != null) {
                 save += fromFile + "#";
-
+                System.out.println("while");
             }
-            System.out.println(fromFile);
+            System.out.println(save);
 
-            fstream = new PrintWriter("out.txt");
+            fstream = new PrintWriter(f);
             out = new BufferedWriter(fstream);
             cal = Calendar.getInstance();
             sdf = new SimpleDateFormat("HH:mm");
