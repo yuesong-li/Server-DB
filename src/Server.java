@@ -138,6 +138,7 @@ public class Server extends Thread {
 			
 			}
 	}
+        //hhhhh
 
 	public void receiveAndSendResponseFromDevice(String deviceAnswer) {
 		System.out.println("ServerThread received multicast message from mts. "
