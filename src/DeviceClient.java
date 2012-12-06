@@ -25,7 +25,7 @@ public class DeviceClient {
 			InputStream clientIn = client.getInputStream();
 			BufferedReader br = new BufferedReader(new InputStreamReader(
 					clientIn));
-			pw.println("lightIn:on,lightOut:on,fan:off,heating:off,door:open,stove:off,coffee:off,bath:on"); 
+			pw.println("lightIn:on,lightOut:on,fan:off,heaterRoom:off,heaterLoft:on,tempRoom:15,tempLoft:10,door:open,stove:off,coffee:off,bath:on"); 
 			while (true) {
 				String msgFromServer = br.readLine();
 				System.out.println("Received from MultiClientServer"

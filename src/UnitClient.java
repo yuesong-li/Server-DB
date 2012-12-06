@@ -50,8 +50,8 @@ public class UnitClient {
 	}
 
 	private static void sendToServer() {
-		System.out.println("Sending command to server : light:On");
-		pw.println("light:On");
+		System.out.println("Sending command to server : tempLoft:-10");
+		pw.println("tempLoft:-10");
 	}
 	
 	private static void receiveStartupDetails() {
@@ -64,8 +64,8 @@ public class UnitClient {
 	}
 	
 	private static void sendUserPass() {
-		String sendUser = "username";
-		String sendPass = "password";
+		String sendUser = "HouseMaster";
+		String sendPass = "HouseMaster";
 		pw.println(sendUser+":"+sendPass);
 		try {
 			String answer = br.readLine();

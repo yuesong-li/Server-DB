@@ -119,10 +119,12 @@ public class Server extends Thread {
 		//if (unitRequest.contains("Lamp") || unitRequest.contains("LAMP")|| unitRequest.contains("lamp")) {
 			/*
 			 * Now we know which device we are supposed to send the command to.
-			 */
-			this.unitRequest = unitRequest.split(":");
-			device = this.unitRequest[0].trim();
-			command = this.unitRequest[1].trim();
+			 */ 
+                        if(unitRequest!=null){
+                            this.unitRequest = unitRequest.split(":");
+                            device = this.unitRequest[0].trim();
+                            command = this.unitRequest[1].trim();
+                        }
 			DatabaseQuery dbq = new DatabaseQuery();
 			for(int i =0; i< dbq.readFromDatabase().size(); i++){
 				String[] deviceinfo = ((String) dbq.readFromDatabase().get(i)).split(":");	
@@ -138,7 +140,6 @@ public class Server extends Thread {
 			
 			}
 	}
-        //hhhhh
 
 	public void receiveAndSendResponseFromDevice(String deviceAnswer) {
 		System.out.println("ServerThread received multicast message from mts. "

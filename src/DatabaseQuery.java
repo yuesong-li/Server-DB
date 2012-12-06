@@ -41,17 +41,17 @@ public class DatabaseQuery {
                 st = con.createStatement();
                 query = "CREATE TABLE IF NOT EXISTS `devices` (`deviceId` int(20) NOT NULL,`deviceName` varchar(40) NOT NULL,`deviceState` varchar(40) NOT NULL, PRIMARY KEY (`deviceId`))";
                 st.executeUpdate(query);
-                System.out.println("Devices Table Created");
+                //System.out.println("Devices Table Created");
                 query = "SELECT * FROM devices";
                 ResultSet rs = st.executeQuery(query);
                 if (!rs.next()) {
-                    query = "INSERT INTO `devices` VALUES (1,'lightIn','on'),(2,'lightOut','on'),(3,'fan','off'),(4,'heating','off'),(5,'door','open'),(6,'stove','off'),(7,'coffee','off'),(8,'bath','on')";
+                    query = "INSERT INTO `devices` VALUES (1,'lightIn','on'),(2,'lightOut','on'),(3,'fan','off'),(4,'heaterRoom','off'),(5,'heaterLoft','off'),(6,'tempRoom','10'),(7,'tempLoft','12'),(8,'door','open'),(9,'stove','off'),(10,'coffee','off'),(11,'bath','on')";
                     st.executeUpdate(query);
-                    System.out.println("Data Inserted");
+                    System.out.println("Data Inserted in Device Table");
                 }
                 query = "CREATE TABLE IF NOT EXISTS `users` (`userid` int(10) NOT NULL AUTO_INCREMENT,`username` varchar(25) DEFAULT NULL,`password` varchar(25) DEFAULT NULL, `access` varchar(25) DEFAULT NULL,PRIMARY KEY (`userid`))";
                 st.executeUpdate(query);
-                System.out.println("User Table Created");
+                //System.out.println("User Table Created");
                 query = "SELECT * FROM users";
                 rs = st.executeQuery(query);
                 if (!rs.next()) {
