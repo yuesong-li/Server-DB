@@ -3,7 +3,6 @@
  * and open the template in the editor.
  */
 
-
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.DataInputStream;
@@ -23,6 +22,7 @@ import java.util.Date;
  */
 public class readOrWriteFromFile {
 // This class is under construction, will be more modified
+
     PrintWriter fstream = null;
     FileInputStream freader = null;
     InputStream iss = null;
@@ -40,9 +40,14 @@ public class readOrWriteFromFile {
             String[] array = user.split(":");
             String users = array[0];
             String passWord = array[1];
-
-
-            System.out.println("IM here");
+            
+            /*String path = "C:\\Users\\user\\resultsFromUnit.txt";
+            File f = new File(path);
+            if (!f.exists()) {
+                //f.mkdirs(); 
+                f.createNewFile();
+            }*/
+            
             File f = new File("C:\\resultsFromUnit.txt");
             freader = new FileInputStream(f);
             dis = new DataInputStream(freader);
@@ -51,7 +56,6 @@ public class readOrWriteFromFile {
             String save = "";
             while ((fromFile = brr.readLine()) != null) {
                 save += fromFile + "#";
-                System.out.println("while");
             }
             System.out.println(save);
 
@@ -66,7 +70,7 @@ public class readOrWriteFromFile {
             Date date = new Date();
             String currentDate = dateFormat.format(date);
 
-            String fromUnit = users + " wants to " + req + " Time " + currentTime +" Date "+currentDate;
+            String fromUnit = users + " wants to " + req + " Time " + currentTime + " Date " + currentDate;
             String[] textTromFile = save.split("#");
             for (int i = 0; i < textTromFile.length; i++) {
                 out.write(textTromFile[i]);
