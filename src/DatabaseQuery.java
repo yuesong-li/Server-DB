@@ -1,4 +1,3 @@
-
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
@@ -9,14 +8,8 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class DatabaseQuery {
-
-    //added user and password these two variable so that it's easier for other people to use this server and test
-    //only need to change to their respective username and password here
-    private String user = "root";
-    private String password = "root";
-    private String url = "jdbc:mysql://127.0.0.1:3306/interactive_house?user=root&password=root";
-
-    /*
+ 
+     /*
      * Simplified method for Creating database, 
      * This method will check for database on localhost. if its find the database will work normally. 
      * otherwise it will create a database with table and data.
@@ -24,7 +17,8 @@ public class DatabaseQuery {
     public void createDatabase() {
         try {
             Class.forName("com.mysql.jdbc.Driver");
-            Connection con = DriverManager.getConnection("jdbc:mysql://127.0.0.1/?user=" + user + "&password=" + password + "");
+            //String url = "jdbc:mysql://127.0.0.1/interactive_house?user=root&password=";
+            Connection con = DriverManager.getConnection("jdbc:mysql://127.0.0.1/?user=root&password=root");
             ResultSet resultSet = con.getMetaData().getCatalogs();
             Statement st = con.createStatement();
             String query;
@@ -36,34 +30,36 @@ public class DatabaseQuery {
                     System.out.println("Database exists");
                     check = true;
                 }
+
             }
-            if (check == false) {
+            if (check == false) {                
                 query = "CREATE DATABASE  IF NOT EXISTS interactive_house";
                 st.executeUpdate(query);
                 System.out.println("Database Created");
             }
-            con = DriverManager.getConnection(url);
-            st = con.createStatement();
-            query = "CREATE TABLE IF NOT EXISTS `devices` (`deviceId` int(20) NOT NULL,`deviceName` varchar(40) NOT NULL,`deviceState` varchar(40) NOT NULL, PRIMARY KEY (`deviceId`))";
-            st.executeUpdate(query);
-            //System.out.println("Devices Table Created");
-            query = "SELECT * FROM devices";
-            ResultSet rs = st.executeQuery(query);
-            if (!rs.next()) {
-                query = "INSERT INTO `devices` VALUES (1,'lightIn','on'),(2,'lightOut','on'),(3,'fan','off'),(4,'heaterRoom','off'),(5,'heaterLoft','off'),(6,'tempRoom','10'),(7,'tempLoft','12'),(8,'door','open'),(9,'stove','off'),(10,'coffee','off'),(11,'bath','on')";
+                con = DriverManager.getConnection("jdbc:mysql://127.0.0.1/interactive_house?user=root&password=root");
+                st = con.createStatement();
+                query = "CREATE TABLE IF NOT EXISTS `devices` (`deviceId` int(20) NOT NULL,`deviceName` varchar(40) NOT NULL,`deviceState` varchar(40) NOT NULL, PRIMARY KEY (`deviceId`))";
                 st.executeUpdate(query);
-                System.out.println("Data Inserted in Device Table");
-            }
-            query = "CREATE TABLE IF NOT EXISTS `users` (`userid` int(10) NOT NULL AUTO_INCREMENT,`username` varchar(25) DEFAULT NULL,`password` varchar(25) DEFAULT NULL, `access` varchar(25) DEFAULT NULL,PRIMARY KEY (`userid`))";
-            st.executeUpdate(query);
-            //System.out.println("User Table Created");
-            query = "SELECT * FROM users";
-            rs = st.executeQuery(query);
-            if (!rs.next()) {
-                query = "INSERT INTO `users` (`userid`, `username`, `password`, `access`) VALUES (1, 'HouseMaster', 'HouseMaster', 'admin'),(2, 'HousePerson', 'HousePerson', 'low'), (3, 'AnotherPerson', 'AnotherPerson', 'high')";
+                //System.out.println("Devices Table Created");
+                query = "SELECT * FROM devices";
+                ResultSet rs = st.executeQuery(query);
+                if (!rs.next()) {
+                    query = "INSERT INTO `devices` VALUES (1,'lightIn','on'),(2,'lightOut','on'),(3,'fan','off'),(4,'heaterRoom','off'),(5,'heaterLoft','off'),(6,'tempRoom','10'),(7,'tempLoft','12'),(8,'door','open'),(9,'stove','off'),(10,'coffee','off'),(11,'bath','on')";
+                    st.executeUpdate(query);
+                    System.out.println("Data Inserted in Device Table");
+                }
+                query = "CREATE TABLE IF NOT EXISTS `users` (`userid` int(10) NOT NULL AUTO_INCREMENT,`username` varchar(25) DEFAULT NULL,`password` varchar(25) DEFAULT NULL, `access` varchar(25) DEFAULT NULL,PRIMARY KEY (`userid`))";
                 st.executeUpdate(query);
-                System.out.println("Data Inserted in users Table");
-            }
+                //System.out.println("User Table Created");
+                query = "SELECT * FROM users";
+                rs = st.executeQuery(query);
+                if (!rs.next()) {
+                    query = "INSERT INTO `users` (`userid`, `username`, `password`, `access`) VALUES (1, 'HouseMaster', 'HouseMaster', 'admin'),(2, 'HousePerson', 'HousePerson', 'low'), (3, 'AnotherPerson', 'AnotherPerson', 'high')";
+                    st.executeUpdate(query);
+                    System.out.println("Data Inserted in users Table");
+                }
+            
 
             resultSet.close();
             con.close();
@@ -74,13 +70,14 @@ public class DatabaseQuery {
         }
     }
 
-    /*
+       /*
      * Simplified method for updating database, only works in the current state
      * of the project. Requires updates for further development of the project.
      */
     public void updateDataBase(String device, String state) {
         try {
             Class.forName("com.mysql.jdbc.Driver");
+            String url = "jdbc:mysql://127.0.0.1/interactive_house?user=root&password=root";
             Connection con = DriverManager.getConnection(url);
             Statement st = con.createStatement();
             String query = "UPDATE devices SET deviceState='" + state
@@ -98,51 +95,54 @@ public class DatabaseQuery {
      * 
      * Now this method will return an ArrayList instead of String 
      */
-
     public ArrayList readFromDatabase() {
-        String dbResponse = null, name = null, state = null;
-        ArrayList<String> dbResponseArray = new ArrayList<String>();
-        try {
-            Class.forName("com.mysql.jdbc.Driver");
-            Connection con = DriverManager.getConnection(url);
-            Statement st = con.createStatement();
+		String dbResponse = null, name = null, state = null;
+		ArrayList<String> dbResponseArray = new ArrayList<String>();
+		try {
+			Class.forName("com.mysql.jdbc.Driver");
+			String url = "jdbc:mysql://127.0.0.1/interactive_house?user=root&password=root";
+			Connection con = DriverManager.getConnection(url);
+			Statement st = con.createStatement();
 
-            String query = "SELECT * FROM devices";
-            ResultSet rs = st.executeQuery(query);
-            while (rs.next()) {
-                name = rs.getString("deviceName");
-                state = rs.getString("deviceState");
-                dbResponse = name + ":" + state;
-                dbResponseArray.add(dbResponse);
-            }
-            //System.out.println("Retrieved from database : " + dbResponseArray);
-            con.close();
-        } catch (Exception e) {
-            System.out.println("Error encountered. : " + e.getMessage());
-        }
-        return dbResponseArray;
-    }
+			String query = "SELECT * FROM devices";
+			ResultSet rs = st.executeQuery(query);
+			while (rs.next()) {
+				name = rs.getString("deviceName");
+				state = rs.getString("deviceState");
+				dbResponse = name + ":" + state;
+				dbResponseArray.add(dbResponse);
+			}
+			//System.out.println("Retrieved from database : " + dbResponseArray);
+			con.close();
+		} catch (Exception e) {
+			System.out.println("Error encountered. : " + e.getMessage());
+		}
+		return dbResponseArray;
+	}
+
 
     public String validateUser(String user, String pass) {
-        String dbUser = null, dbPass = null;
-        try {
-            Class.forName("com.mysql.jdbc.Driver");
-            Connection con = DriverManager.getConnection(url);
-            Statement st = con.createStatement();
-
-            String query = "SELECT username, password FROM users WHERE username='" + user + "'";
-            ResultSet rs = st.executeQuery(query);
-            while (rs.next()) {
-                dbUser = rs.getString("username");
-                dbPass = rs.getString("password");
-            }
-            System.out.println("Result from db : " + dbUser + " " + dbPass);
-            if (user.equals(dbUser) && pass.equals(dbPass)) {
-                return "Pass";
-            }
-        } catch (Exception e) {
-            System.out.println("Error encountered. : " + e.getMessage());
-        }
-        return "Fail";
-    }
+		String dbUser = null, dbPass = null, dbAccess = null;
+		try {
+			Class.forName("com.mysql.jdbc.Driver");
+			String url = "jdbc:mysql://127.0.0.1/interactive_house?user=root&password=root";
+			Connection con = DriverManager.getConnection(url);
+			Statement st = con.createStatement();
+			
+			String query = "SELECT username, password, access FROM users WHERE username='"+ user +"'";
+			ResultSet rs = st.executeQuery(query);
+			while(rs.next()) {
+				dbUser = rs.getString("username");
+				dbPass = rs.getString("password");
+                                dbAccess = rs.getString("access");
+			}
+			System.out.println("Result from db : " + dbUser + " " + dbPass);
+			if(user.equals(dbUser) && pass.equals(dbPass)) {
+				return dbAccess;
+			}
+		} catch (Exception e) {
+			System.out.println("Error encountered. : " + e.getMessage());
+		}
+		return "Fail";
+	}
 }

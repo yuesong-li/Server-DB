@@ -18,7 +18,6 @@ import java.net.Socket;
  * 							
  * ***********************************************************************
  */
-
 public class Server extends Thread {
 
     Socket clientSocket = null;
@@ -79,7 +78,7 @@ public class Server extends Thread {
         String validation = mts.validateUserAndPass(userAndPass);
         if (validation.equals("Fail")) {
             try {
-                pw.println("Validation failed.");
+                pw.println("login:fail");
                 clientSocket.close();
             } catch (IOException e) {
 
@@ -87,7 +86,7 @@ public class Server extends Thread {
 
             }
         } else {
-            pw.println("Validation successful.");
+            pw.println("login:" + validation);
         }
     }
     /*
@@ -115,8 +114,6 @@ public class Server extends Thread {
      // do something
      }
      } */
-    
-    
     /*
      * 
      * This method will verify the unit request is  necessary or not
