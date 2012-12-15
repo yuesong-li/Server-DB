@@ -42,6 +42,7 @@ public class Server extends Thread {
         this.dbResponse = dbResponse;
     }
 
+    @Override
     public void run() {
         /*
          * Create the streams for input/output so we can communicate with the
@@ -136,7 +137,7 @@ public class Server extends Thread {
             String[] deviceinfo = ((String) dbq.readFromDatabase().get(i)).split(":");
             if (device.equals(deviceinfo[0].trim()) && command.equals(deviceinfo[1].trim())) {
                 System.out.println("This command is already executed on devices");
-                pw.println("This command is already executed on devices");
+                pw.println(device + ":" + command);
             } else if (device.equals(deviceinfo[0].trim()) && command != (deviceinfo[1].trim())) {
                 System.out.println("Unit received following from server : " + unitRequest);
                 readOrWriteFromFile row = new readOrWriteFromFile();
