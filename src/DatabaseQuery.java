@@ -45,7 +45,7 @@ public class DatabaseQuery {
                 query = "SELECT * FROM devices";
                 ResultSet rs = st.executeQuery(query);
                 if (!rs.next()) {
-                    query = "INSERT INTO `devices` VALUES (1,'lightIn','on'),(2,'lightOut','on'),(3,'fan','off'),(4,'heaterRoom','off'),(5,'heaterLoft','off'),(6,'tempRoom','10'),(7,'tempLoft','12'),(8,'door','open'),(9,'stove','off'),(10,'coffee','off'),(11,'bath','on')";
+                    query = "INSERT INTO `devices` VALUES (1,'lightIn','on'),(2,'lightOut','on'),(3,'fan','off'),(4,'heaterRoom','off'),(5,'heaterLoft','off'),(6,'tempRoom','10'),(7,'tempLoft','12'),(8,'door','open'),(9,'stove','off'),(10,'coffee','off'),(11,'bath','on'),(12,'wash','off'),(13,'media','off')";
                     st.executeUpdate(query);
                     System.out.println("Data Inserted in Device Table");
                 }

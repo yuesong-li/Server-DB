@@ -42,7 +42,6 @@ public class Server extends Thread {
         this.dbResponse = dbResponse;
     }
 
-    @Override
     public void run() {
         /*
          * Create the streams for input/output so we can communicate with the
@@ -62,8 +61,14 @@ public class Server extends Thread {
             pw.println(dbResponse);
             while (true) {
                 String unitRequest = br.readLine();
-                verifyRequest(unitRequest);
-                row.writeToFile(userAndPass, unitRequest);
+                if (unitRequest.contains("getStatus")) {
+                    System.out.println("Server - Sending the status to unit");
+                    String deviceStates = mts.getAllState();
+                    pw.println(deviceStates);
+                } else {
+                    verifyRequest(unitRequest);
+                    row.writeToFile(userAndPass, unitRequest);
+                }
             }
         } catch (IOException e) {
             System.out.println("Failed in creating streams!");
@@ -137,7 +142,7 @@ public class Server extends Thread {
             String[] deviceinfo = ((String) dbq.readFromDatabase().get(i)).split(":");
             if (device.equals(deviceinfo[0].trim()) && command.equals(deviceinfo[1].trim())) {
                 System.out.println("This command is already executed on devices");
-                pw.println(device + ":" + command);
+                pw.println("This command is already executed on devices");
             } else if (device.equals(deviceinfo[0].trim()) && command != (deviceinfo[1].trim())) {
                 System.out.println("Unit received following from server : " + unitRequest);
                 readOrWriteFromFile row = new readOrWriteFromFile();
