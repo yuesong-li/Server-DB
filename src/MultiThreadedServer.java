@@ -66,7 +66,7 @@ public class MultiThreadedServer extends Thread {
                             .println("Connection with house established. Running on : "
                             + deviceClientSocket
                             .getRemoteSocketAddress());
-                    DeviceThread device = new DeviceThread(deviceClientSocket);
+                    DeviceThread device = new DeviceThread(deviceClientSocket, this);
                     device.start();
                     
                     // Here we must accept information from the House.

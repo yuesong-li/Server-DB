@@ -16,28 +16,36 @@ import javax.mail.internet.AddressException;
  *
  * @author Hanna
  */
-public class DeviceThread extends Thread{
+public class DeviceThread extends Thread {
 
     Socket deviceSocket = null;
-    BufferedReader buffer =null;
+    BufferedReader buffer = null;
     InputStreamReader input = null;
-    MultiThreadedServer multi =null;
+    MultiThreadedServer multi = null;
+    readOrWriteFromFile r = new readOrWriteFromFile();
 
-    public DeviceThread(Socket deviceSocket) {
+    public DeviceThread(Socket deviceSocket, MultiThreadedServer mts) {
+        this.multi = mts;
         this.deviceSocket = deviceSocket;
     }
 
     @Override
     public void run() {
-        try { 
-            input = new InputStreamReader(deviceSocket.getInputStream());
-            buffer = new BufferedReader(input);
-            multi = new MultiThreadedServer();
-            sendEmail send = new sendEmail();
-            send.sending();
-            //Here we listen for the Alaram message from the device machine
-            String alarm = buffer.readLine();
-            multi.sendToAllServerThreads(alarm);
+        try {
+            System.out.println("Device threaded created");
+            while (true) {
+                input = new InputStreamReader(deviceSocket.getInputStream());
+                buffer = new BufferedReader(input);
+//                multi = new MultiThreadedServer();
+
+                //Here we listen for the Alaram message from the device machine
+                String alarm = buffer.readLine();
+                System.out.println("******Alarm******" + alarm);
+                sendEmail send = new sendEmail();
+                send.sending();
+                r.writeToFile("House", "alarm");
+                multi.sendToAllServerThreads(alarm);
+            }
         } catch (AddressException ex) {
             Logger.getLogger(DeviceThread.class.getName()).log(Level.SEVERE, null, ex);
         } catch (MessagingException ex) {
@@ -46,6 +54,6 @@ public class DeviceThread extends Thread{
             Logger.getLogger(DeviceThread.class.getName()).log(Level.SEVERE, null, ex);
         }
 
-        
+
     }
 }

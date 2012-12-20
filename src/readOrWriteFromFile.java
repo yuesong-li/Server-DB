@@ -34,20 +34,13 @@ public class readOrWriteFromFile {
     SimpleDateFormat sdf2 = null;
     String currentTime = null;
     String date = null;
+    String fromUnit = null;
 
     public void writeToFile(String user, String req) {
         try {
+            System.out.println("REQ " + req + "User " + user);
             String[] array = user.split(":");
             String users = array[0];
-            String passWord = array[1];
-            
-            /*String path = "C:\\Users\\user\\resultsFromUnit.txt";
-            File f = new File(path);
-            if (!f.exists()) {
-                //f.mkdirs(); 
-                f.createNewFile();
-            }*/
-            
             File f = new File("C:\\resultsFromUnit.txt");
             freader = new FileInputStream(f);
             dis = new DataInputStream(freader);
@@ -69,8 +62,11 @@ public class readOrWriteFromFile {
             DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
             Date date = new Date();
             String currentDate = dateFormat.format(date);
-
-            String fromUnit = users + " wants to " + req + " Time " + currentTime + " Date " + currentDate;
+            if (req.equalsIgnoreCase("alarm")) {
+                fromUnit = "User: " + user + " Alarm was triggered Time: " + currentTime + " Date: " + currentDate;
+            } else {
+                fromUnit = users + " wants to " + req + " Time " + currentTime + " Date " + currentDate;
+            }
             String[] textTromFile = save.split("#");
             for (int i = 0; i < textTromFile.length; i++) {
                 out.write(textTromFile[i]);
@@ -84,5 +80,11 @@ public class readOrWriteFromFile {
         } catch (Exception ex) {
             ex.getStackTrace();
         }
+    }
+
+    public String triggerAlarm(String alarm) {
+
+
+        return null;
     }
 }
