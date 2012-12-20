@@ -5,6 +5,10 @@ import java.io.InputStreamReader;
 import java.io.ObjectInputStream;
 import java.io.PrintWriter;
 import java.net.Socket;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.mail.MessagingException;
+import javax.mail.internet.AddressException;
 
 
 /*
@@ -48,6 +52,7 @@ public class Server extends Thread {
          * Units.
          */
         try {
+           
             br = new BufferedReader(new InputStreamReader(
                     clientSocket.getInputStream()));
             pw = new PrintWriter(clientSocket.getOutputStream(), true);
@@ -55,8 +60,6 @@ public class Server extends Thread {
             //UserAndPass is the received username&password from the client.
             userAndPass = br.readLine();
             validateUser(userAndPass);
-
-
             //dbResponse is the current deviceInformation in the database
             pw.println(dbResponse);
             while (true) {

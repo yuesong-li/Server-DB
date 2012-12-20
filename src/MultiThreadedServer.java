@@ -11,10 +11,10 @@ import java.util.ArrayList;
  * Class : MultiThreadedServer
  * 
  * Class functionality :     MultiThreadedServer class is the heart of the house.
- * 							All communication passes through here and gets sent to the
- * 							right place.
+ * All communication passes through here and gets sent to the
+ * right place.
  *  
- * 							For a full overview of the class, we refer to the design documents.							
+ * For a full overview of the class, we refer to the design documents.							
  * 							
  * ********************************************************************************************
  */
@@ -66,6 +66,9 @@ public class MultiThreadedServer extends Thread {
                             .println("Connection with house established. Running on : "
                             + deviceClientSocket
                             .getRemoteSocketAddress());
+                    DeviceThread device = new DeviceThread(deviceClientSocket);
+                    device.start();
+                    
                     // Here we must accept information from the House.
                     // Devices and all of their states must be updated in the
                     // DataBase
@@ -151,7 +154,6 @@ public class MultiThreadedServer extends Thread {
             System.out.println(e.getMessage());
         }
     }
-
     /*
      * Synchronized method that the server-threads invoke when they have a
      * command issued. We only want one client at a time to be able to to send

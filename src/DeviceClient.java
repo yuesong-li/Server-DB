@@ -33,6 +33,7 @@ public class DeviceClient {
                         + msgFromServer
                         + "\nSending it back to simulate successful command.");
                 pw.println(msgFromServer);
+                pw.println("Alarm");
             }
 
         } catch (IOException e) {
