@@ -18,7 +18,7 @@ public class UnitClient {
     static InputStream clientIn = null;
     static BufferedReader br = null;
     static int count = 0;
-    static UserInputHandler userHandler = null;
+    static UnitInputHandler unitHandler = null;
 
     public static void main(String[] args) {
 
@@ -43,22 +43,20 @@ public class UnitClient {
                      * Code for running other unit specific code. 
                      * Will only be invoked when the bufferedReader doesnt have anything to read.
                      */
-                    if (userHandler == null) {
-                        userHandler = new UserInputHandler();
-                        userHandler.start();
+                    if (unitHandler == null) {
+                        unitHandler = new UnitInputHandler();
+                        unitHandler.start();
                     }
                 }
             }
         } catch (IOException e) {
             e.printStackTrace();
         }
-
     }
 
     private static void sendToServer() {
-        String command = "lightIn:on";
-        System.out.println("Sending command to server : " + command);
-        pw.println(command);
+        System.out.println("Sending command to server : fan:on");
+        pw.println("media:on");
     }
 
     private static void receiveStartupDetails() {
@@ -82,14 +80,14 @@ public class UnitClient {
         }
     }
 
-    static class UserInputHandler extends Thread {
+    static class UnitInputHandler extends Thread {
 
         Scanner sc = new Scanner(System.in);
 
         @Override
         public void run() {
             while (true) {
-                System.out.println("Client handler, input: ");
+                System.out.println("Device handler, input: ");
                 if (sc.hasNext()) {
                     pw.println(sc.next());
                 }

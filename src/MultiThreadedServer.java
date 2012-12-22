@@ -7,15 +7,15 @@ import java.util.ArrayList;
 /*
  **********************************************************************************************
  * Authors : Mathias Olsson, Hanna Persson, Zakir Hossain
- *
+ * 
  * Class : MultiThreadedServer
- *
+ * 
  * Class functionality :     MultiThreadedServer class is the heart of the house.
- * 							All communication passes through here and gets sent to the
- * 							right place.
- *
- * 							For a full overview of the class, we refer to the design documents.
- *
+ * All communication passes through here and gets sent to the
+ * right place.
+ *  
+ * For a full overview of the class, we refer to the design documents.							
+ * 							
  * ********************************************************************************************
  */
 public class MultiThreadedServer extends Thread {
@@ -66,6 +66,9 @@ public class MultiThreadedServer extends Thread {
                             .println("Connection with house established. Running on : "
                             + deviceClientSocket
                             .getRemoteSocketAddress());
+                    DeviceThread device = new DeviceThread(deviceClientSocket, this);
+                    device.start();
+
                     // Here we must accept information from the House.
                     // Devices and all of their states must be updated in the
                     // DataBase
@@ -89,8 +92,15 @@ public class MultiThreadedServer extends Thread {
                     unitClientSocket = unitServerSocket.accept();
                     System.out.println("Client accepted. Client : "
                             + unitClientSocket.getRemoteSocketAddress());
-
-                    String devicesstatus = getCurrentDeviceStatus();
+                    /*
+                     * To retrieve the all devices status from arrayList and store it on a String
+                     *  dbq.readFromDatabase() return a arraylist we have to add it on a string 
+                     *  And send it to all unit client
+                     */
+                    String devicesstatus = (String) dbq.readFromDatabase().get(0);
+                    for (int i = 1; i < dbq.readFromDatabase().size(); i++) {
+                        devicesstatus = devicesstatus + "," + (String) dbq.readFromDatabase().get(i);
+                    }
                     Server server = new Server(unitClientSocket, this, devicesstatus);
                     server.start();
                     threadList.add(server);
@@ -104,6 +114,7 @@ public class MultiThreadedServer extends Thread {
     }
 
     /*
+     * 
      * Receiving the information on the current devices from the device-client.
      * Also overwrites the database with the newest information/states.
      */
@@ -143,43 +154,38 @@ public class MultiThreadedServer extends Thread {
             System.out.println(e.getMessage());
         }
     }
-
     /*
      * Synchronized method that the server-threads invoke when they have a
      * command issued. We only want one client at a time to be able to to send
      * at one time.
-     *
+     * 
      * OPTIONAL REQUIREMENT : Priority queue (Desirable)
      */
+
     public synchronized void sendToDevice(String unitRequest) {
         System.out.println("Message from server-thread : " + unitRequest + ".");
         deviceWriter.println(unitRequest);
-        try {
-            String deviceAnswer = deviceReader.readLine();
-            if (deviceAnswer != null && deviceAnswer.equals(unitRequest)) {
-                /*
-                 * The command was successfully executed on the device.
-                 * SO server should update new state of devices to database its read the message and split it and
-                 * update it to database.
-                 *
-                 */
-                String device, state;
-                String[] deviceMessageArray = deviceAnswer.split(":");
-                device = deviceMessageArray[0];
-                state = deviceMessageArray[1];
-                dbq.updateDataBase(device, state);
 
-                /*
-                 * Here we need to reply units with the complete device status
-                 * so that they can use this info to realize semi-update
-                 */
-                System.out.println("Sending to all servers.");
-                deviceAnswer = getCurrentDeviceStatus();
-                sendToAllServerThreads(deviceAnswer);
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
+        //String deviceAnswer = deviceReader.readLine();
+        String deviceAnswer = getAllState();
+        //TODO: handle situation where deviceAnswer doesn't contain unitRequest
+        if (deviceAnswer != null && deviceAnswer.contains(unitRequest)) {
+            /*
+             * The command was successfully executed on the device.
+             * SO server should update new state of devices to database its read the message and split it and 
+             * update it to database. 
+             * 
+             */
+//            String device, state;
+//            String[] deviceMessageArray = deviceAnswer.split(":");
+//            device = deviceMessageArray[0];
+//            state = deviceMessageArray[1];
+//            dbq.updateDataBase(device, state);
+
+            System.out.println("Sending to all servers.");
+            sendToAllServerThreads(deviceAnswer);
         }
+
     }
 
     public synchronized String validateUserAndPass(String userAndPass) {
@@ -191,22 +197,17 @@ public class MultiThreadedServer extends Thread {
         return validation;
     }
 
-    /*
-     * To retrieve the all devices status from arrayList and store it on a String
-     *  dbq.readFromDatabase() return a arraylist we have to add it on a string
-     *  And send it to all unit client
-     */
-    public String getCurrentDeviceStatus() {
+    public void sendToAllServerThreads(String deviceAnswer) {
+        for (int i = 0; i < threadList.size(); i++) {
+            threadList.get(i).receiveAndSendResponseFromDevice(deviceAnswer);
+        }
+    }
+
+    public String getAllState() {
         String devicesstatus = (String) dbq.readFromDatabase().get(0);
         for (int i = 1; i < dbq.readFromDatabase().size(); i++) {
             devicesstatus = devicesstatus + "," + (String) dbq.readFromDatabase().get(i);
         }
         return devicesstatus;
-    }
-
-    public void sendToAllServerThreads(String deviceAnswer) {
-        for (int i = 0; i < threadList.size(); i++) {
-            threadList.get(i).receiveAndSendResponseFromDevice(deviceAnswer);
-        }
     }
 }
