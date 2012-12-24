@@ -10,6 +10,8 @@ import java.util.logging.Logger;
 
 public class DatabaseQuery {
 
+    private final String TAG = "DB: ";
+
     /*
      * Simplified method for Creating database, 
      * This method will check for database on localhost. if its find the database will work normally. 
@@ -28,7 +30,7 @@ public class DatabaseQuery {
                 // Get the database name                
                 //databaseName.add(resultSet.getString(1));
                 if (resultSet.getString(1).equals("interactive_house")) {
-                    System.out.println("Database exists");
+                    System.out.println(TAG + "Database exists");
                     check = true;
                 }
 
@@ -36,7 +38,7 @@ public class DatabaseQuery {
             if (check == false) {
                 query = "CREATE DATABASE  IF NOT EXISTS interactive_house";
                 st.executeUpdate(query);
-                System.out.println("Database Created");
+                System.out.println(TAG + "Database Created");
             }
             con = DriverManager.getConnection("jdbc:mysql://127.0.0.1/interactive_house?user=root&password=root");
             st = con.createStatement();
@@ -48,7 +50,7 @@ public class DatabaseQuery {
             if (!rs.next()) {
                 query = "INSERT INTO `devices` VALUES (1,'lightIn','on'),(2,'lightOut','on'),(3,'fan','off'),(4,'heaterRoom','off'),(5,'heaterLoft','off'),(6,'tempRoom','10'),(7,'tempLoft','12'),(8,'door','unlocked'),(9,'coffee','off'),(10,'bath','on'),(11,'wash','off'),(12,'media','off')";
                 st.executeUpdate(query);
-                System.out.println("Data Inserted in Device Table");
+                System.out.println(TAG + "Data Inserted in Device Table");
             }
             query = "CREATE TABLE IF NOT EXISTS `users` (`userid` int(10) NOT NULL AUTO_INCREMENT,`username` varchar(25) DEFAULT NULL,`password` varchar(25) DEFAULT NULL, `access` varchar(25) DEFAULT NULL,PRIMARY KEY (`userid`))";
             st.executeUpdate(query);
@@ -58,7 +60,7 @@ public class DatabaseQuery {
             if (!rs.next()) {
                 query = "INSERT INTO `users` (`userid`, `username`, `password`, `access`) VALUES (1, 'HouseMaster', 'HouseMaster', 'admin'),(2, 'HousePerson', 'HousePerson', 'low'), (3, 'AnotherPerson', 'AnotherPerson', 'high')";
                 st.executeUpdate(query);
-                System.out.println("Data Inserted in users Table");
+                System.out.println(TAG + "Data Inserted in users Table");
             }
 
 
@@ -84,11 +86,11 @@ public class DatabaseQuery {
             String query = "UPDATE devices SET deviceState='" + state
                     + "' WHERE deviceName='" + device + "'";
             st.executeUpdate(query);
-            System.out.println("Database updated : " + device + " : " + state);
+            System.out.println(TAG + "Database updated : " + device + " : " + state);
             con.close();
         } catch (Exception e) {
             e.printStackTrace();
-            System.out.println("Error encountered. : " + e.getMessage());
+            System.out.println(TAG + "Error encountered. : " + e.getMessage());
         }
     }
     /*
@@ -117,7 +119,7 @@ public class DatabaseQuery {
             //System.out.println("Retrieved from database : " + dbResponseArray);
             con.close();
         } catch (Exception e) {
-            System.out.println("Error encountered. : " + e.getMessage());
+            System.out.println(TAG + "Error encountered. : " + e.getMessage());
         }
         return dbResponseArray;
     }
@@ -137,12 +139,12 @@ public class DatabaseQuery {
                 dbPass = rs.getString("password");
                 dbAccess = rs.getString("access");
             }
-            System.out.println("Result from db : " + dbUser + " " + dbPass);
+            System.out.println(TAG + "Result from db : " + dbUser + " " + dbPass);
             if (user.equals(dbUser) && pass.equals(dbPass)) {
                 return dbAccess;
             }
         } catch (Exception e) {
-            System.out.println("Error encountered. : " + e.getMessage());
+            System.out.println(TAG + "Error encountered. : " + e.getMessage());
         }
         return "Fail";
     }

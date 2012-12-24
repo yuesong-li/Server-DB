@@ -2,6 +2,8 @@
 import java.io.*;
 import java.net.*;
 import java.util.ArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 
 /*
@@ -23,6 +25,7 @@ public class MultiThreadedServer extends Thread {
     /*
      * Declaration of variables used for this class.
      */
+    private final String TAG = "MTS: ";
     ServerSocket deviceServerSocket = null;
     ServerSocket unitServerSocket = null;
     Socket unitClientSocket = null;
@@ -37,6 +40,7 @@ public class MultiThreadedServer extends Thread {
         dbq.createDatabase();
     }
 
+    @Override
     public void run() {
         try {
             /*
@@ -44,12 +48,12 @@ public class MultiThreadedServer extends Thread {
              * socket for device.
              */
             deviceServerSocket = new ServerSocket(7777);
-            System.out.print("Server running device-socket on "
+            System.out.print(TAG + "running device-socket on "
                     + InetAddress.getLocalHost()
                     + "\nAwaiting device-client connection.. .. ..");
 
         } catch (IOException e) {
-            System.out.println("Could not listen on port: 8888");
+            System.out.println(TAG + "Could not listen on port: 7777");
             System.exit(-1);
         }
 
@@ -63,24 +67,24 @@ public class MultiThreadedServer extends Thread {
                 if (deviceClientSocket == null) {
                     deviceClientSocket = deviceServerSocket.accept();
                     System.out
-                            .println("Connection with house established. Running on : "
+                            .println("\n"+TAG + "Connection with house established. Running on : "
                             + deviceClientSocket
                             .getRemoteSocketAddress());
                     DeviceThread device = new DeviceThread(deviceClientSocket, this);
                     device.start();
-
-                    // Here we must accept information from the House.
-                    // Devices and all of their states must be updated in the
-                    // DataBase
+                    /*
+                     * Here we must accept information from the House.
+                     * Devices and all of their states must be updated in the
+                     * DataBase
+                     */
                     createDeviceStreams();
                     receiveInitialDevices();
-
                     /*
                      * Following segment of code covers the creation of the
                      * server socket for units.
                      */
                     unitServerSocket = new ServerSocket(8888);
-                    System.out.println("\nServer running on "
+                    System.out.println(TAG + "\nServer running on "
                             + InetAddress.getLocalHost()
                             + "\nAwaiting unit-client connection.. .. ..");
 
@@ -90,23 +94,16 @@ public class MultiThreadedServer extends Thread {
                  * connection has been made with the house.
                  */ else {
                     unitClientSocket = unitServerSocket.accept();
-                    System.out.println("Client accepted. Client : "
+                    System.out.println(TAG + "Client accepted. Client : "
                             + unitClientSocket.getRemoteSocketAddress());
-                    /*
-                     * To retrieve the all devices status from arrayList and store it on a String
-                     *  dbq.readFromDatabase() return a arraylist we have to add it on a string 
-                     *  And send it to all unit client
-                     */
-                    String devicesstatus = (String) dbq.readFromDatabase().get(0);
-                    for (int i = 1; i < dbq.readFromDatabase().size(); i++) {
-                        devicesstatus = devicesstatus + "," + (String) dbq.readFromDatabase().get(i);
-                    }
-                    Server server = new Server(unitClientSocket, this, devicesstatus);
+
+                    String devicesStatus = getAllState();
+                    Server server = new Server(unitClientSocket, this, devicesStatus);
                     server.start();
                     threadList.add(server);
                 }
             } catch (IOException e) {
-                System.out.println("Accept failed: 1234");
+                System.out.println(TAG + "Accept failed: 1234");
                 System.exit(-1);
             }
         }
@@ -122,7 +119,7 @@ public class MultiThreadedServer extends Thread {
         try {
             String deviceMessage, device, state;
             deviceMessage = deviceReader.readLine();
-            System.out.println("Received from deviceClient : " + deviceMessage);
+            System.out.println(TAG + "received from device : " + deviceMessage);
             String[] allDevicesStatus = null;
             allDevicesStatus = deviceMessage.split(",");
             for (int i = 0; i < allDevicesStatus.length; i++) {
@@ -135,7 +132,7 @@ public class MultiThreadedServer extends Thread {
             }
 
         } catch (IOException e) {
-            System.out.println("Failed to read from devices.");
+            System.out.println(TAG + "Failed to read from devices.");
             System.out.println(e.getMessage());
         }
     }
@@ -150,7 +147,7 @@ public class MultiThreadedServer extends Thread {
             deviceWriter = new PrintWriter(
                     deviceClientSocket.getOutputStream(), true);
         } catch (IOException e) {
-            System.out.println("Failed in creating streams.");
+            System.out.println(TAG + "failed in creating device streams.");
             System.out.println(e.getMessage());
         }
     }
@@ -163,33 +160,36 @@ public class MultiThreadedServer extends Thread {
      */
 
     public synchronized void sendToDevice(String unitRequest) {
-        System.out.println("Message from server-thread : " + unitRequest + ".");
+        System.out.println(TAG + "request from server-thread - " + unitRequest);
         deviceWriter.println(unitRequest);
-
-        //String deviceAnswer = deviceReader.readLine();
-        String deviceAnswer = getAllState();
-        //TODO: handle situation where deviceAnswer doesn't contain unitRequest
-        if (deviceAnswer != null && deviceAnswer.contains(unitRequest)) {
-            /*
-             * The command was successfully executed on the device.
-             * SO server should update new state of devices to database its read the message and split it and 
-             * update it to database. 
-             * 
-             */
-//            String device, state;
-//            String[] deviceMessageArray = deviceAnswer.split(":");
-//            device = deviceMessageArray[0];
-//            state = deviceMessageArray[1];
-//            dbq.updateDataBase(device, state);
-
-            System.out.println("Sending to all servers.");
-            sendToAllServerThreads(deviceAnswer);
-        }
-
+        
+//        try {
+//            Thread.sleep(1000);
+//        } catch (InterruptedException ex) {
+//            Logger.getLogger(MultiThreadedServer.class.getName()).log(Level.SEVERE, null, ex);
+//        }
+//        
+//        String deviceAnswer = getAllState();
+//        //TODO: handle situation where deviceAnswer doesn't contain unitRequest
+//        if (deviceAnswer != null) {
+//            if (deviceAnswer.contains(unitRequest)) {
+//                /*
+//                 * The command was successfully executed on the device.
+//                 * SO server should update new state of devices to database its read the message and split it and 
+//                 * update it to database. 
+//                 * 
+//                 */
+//                System.out.println(TAG + "Sending to all servers.");
+//                //TODO: whether or not to keep this?
+//                sendToAllServerThreads(deviceAnswer);
+//            } else {
+//                //handle situation where deviceAnswer doesn't contain unitRequest
+//            }
+//        }
     }
 
     public synchronized String validateUserAndPass(String userAndPass) {
-        System.out.println("Method:validateUserAndPass : Message from server-thread : " + userAndPass + ".");
+        System.out.println(TAG + "login info from server-thread : " + userAndPass);
         String[] usernameAndPass = userAndPass.split(":");
         String user = usernameAndPass[0];
         String pass = usernameAndPass[1];
@@ -203,6 +203,10 @@ public class MultiThreadedServer extends Thread {
         }
     }
 
+    /*
+     * To retrieve the all devices status from arrayList and store it on a String
+     *  dbq.readFromDatabase() return a arraylist we have to add it on a string 
+     */
     public String getAllState() {
         String devicesstatus = (String) dbq.readFromDatabase().get(0);
         for (int i = 1; i < dbq.readFromDatabase().size(); i++) {

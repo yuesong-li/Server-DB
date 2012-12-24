@@ -20,6 +20,7 @@ import java.net.Socket;
  */
 public class Server extends Thread {
 
+    private final String TAG = "SERVER: ";
     Socket clientSocket = null;
     ObjectInputStream serverInput = null;
     MultiThreadedServer mts = null;
@@ -48,11 +49,11 @@ public class Server extends Thread {
          * Units.
          */
         try {
-           
+
             br = new BufferedReader(new InputStreamReader(
                     clientSocket.getInputStream()));
             pw = new PrintWriter(clientSocket.getOutputStream(), true);
-            System.out.println("Server is sending to UNIT : " + dbResponse);
+            System.out.println(TAG + "sending to UNIT : " + dbResponse);
             //UserAndPass is the received username&password from the client.
             userAndPass = br.readLine();
             validateUser(userAndPass);
@@ -61,7 +62,7 @@ public class Server extends Thread {
             while (true) {
                 String unitRequest = br.readLine();
                 if (unitRequest.contains("getStatus")) {
-                    System.out.println("Server - Sending the status to unit");
+                    //System.out.println("Server - Sending the status to unit");
                     String deviceStates = mts.getAllState();
                     pw.println(deviceStates);
                 } else {
@@ -70,7 +71,7 @@ public class Server extends Thread {
                 }
             }
         } catch (IOException e) {
-            System.out.println("Failed in creating streams!");
+            System.out.println(TAG + "Failed in creating streams!");
             System.out.println(e.getMessage());
         }
     }
@@ -87,7 +88,7 @@ public class Server extends Thread {
                 clientSocket.close();
             } catch (IOException e) {
 
-                System.out.println("Method:validateUser : " + e.getMessage());
+                System.out.println(TAG + "method: validateUser : " + e.getMessage());
 
             }
         } else {
@@ -127,33 +128,39 @@ public class Server extends Thread {
      * if same data found send a error message to unit and discard request else send request to device
      */
     private void verifyRequest(String unitRequest) {
-        //if (unitRequest.contains("Lamp") || unitRequest.contains("LAMP")|| unitRequest.contains("lamp")) {
-			/*
+        /*
          * Now we know which device we are supposed to send the command to.
+         * if the request contains temp, send it directly to device, without checking with DB
+         * Otherwise, verify it first with DB.
          */
         if (unitRequest != null) {
-            this.unitRequest = unitRequest.split(":");
-            device = this.unitRequest[0].trim();
-            command = this.unitRequest[1].trim();
-        }
-        DatabaseQuery dbq = new DatabaseQuery();
-        for (int i = 0; i < dbq.readFromDatabase().size(); i++) {
-            String[] deviceinfo = ((String) dbq.readFromDatabase().get(i)).split(":");
-            if (device.equals(deviceinfo[0].trim()) && command.equals(deviceinfo[1].trim())) {
-                System.out.println("This command is already executed on devices");
-                pw.println("This command is already executed on devices");
-            } else if (device.equals(deviceinfo[0].trim()) && !command.equals(deviceinfo[1].trim())) {
-                System.out.println("Unit received following from server : " + unitRequest);
-                readOrWriteFromFile row = new readOrWriteFromFile();
-                row.writeToFile(userAndPass, unitRequest);
+            if (unitRequest.contains("temp")) {
                 mts.sendToDevice(unitRequest);
+                System.out.println(TAG + "sending the following from server to device : " + unitRequest);
+            } else {
+                this.unitRequest = unitRequest.split(":");
+                device = this.unitRequest[0].trim();
+                command = this.unitRequest[1].trim();
+                DatabaseQuery dbq = new DatabaseQuery();
+                for (int i = 0; i < dbq.readFromDatabase().size(); i++) {
+                    String[] deviceinfo = ((String) dbq.readFromDatabase().get(i)).split(":");
+                    if (device.equals(deviceinfo[0].trim()) && command.equals(deviceinfo[1].trim())) {
+                        System.out.println(TAG + "This command is already executed on devices");
+                        //reply with the newest device status
+                        String status = mts.getAllState();
+                        pw.println(status);
+                    } else if (device.equals(deviceinfo[0].trim()) && !command.equals(deviceinfo[1].trim())) {
+                        System.out.println(TAG + "sending the following from server to device : " + unitRequest);
+                        row.writeToFile(userAndPass, unitRequest);
+                        mts.sendToDevice(unitRequest);
+                    }
+                }
             }
         }
     }
 
     public void receiveAndSendResponseFromDevice(String deviceAnswer) {
-        System.out.println("ServerThread received multicast message from mts. "
-                + deviceAnswer);
+        System.out.println(TAG + "received multicast message from mts - " + deviceAnswer);
         pw.println(deviceAnswer);
     }
 }

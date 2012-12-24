@@ -29,7 +29,7 @@ public class DeviceClient {
             InputStream clientIn = client.getInputStream();
             BufferedReader br = new BufferedReader(new InputStreamReader(
                     clientIn));
-            pw.println("lightIn:on,lightOut:on,fan:off,heaterRoom:off,heaterLoft:on,tempRoom:15,tempLoft:10,door:open,stove:off,coffee:off,bath:on");
+            pw.println("lightIn:on,lightOut:on,fan:off,heaterRoom:off,heaterLoft:on,tempRoom:15,tempLoft:10,door:unlocked,coffee:off,bath:on,wash:off,media:off");
 //            for (int i = 0; i < 100000; i++) {
 //                String s = i + "";
 //            }

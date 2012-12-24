@@ -18,43 +18,47 @@ import javax.mail.internet.AddressException;
  */
 public class DeviceThread extends Thread {
 
+    private final String TAG = "DEVICE_THREAD: ";
     Socket deviceSocket = null;
     BufferedReader buffer = null;
     InputStreamReader input = null;
-    MultiThreadedServer multi = null;
+    MultiThreadedServer mts = null;
     readOrWriteFromFile r = new readOrWriteFromFile();
     DatabaseQuery dbq = new DatabaseQuery();
 
     public DeviceThread(Socket deviceSocket, MultiThreadedServer mts) {
-        this.multi = mts;
+        this.mts = mts;
         this.deviceSocket = deviceSocket;
     }
 
     @Override
     public void run() {
         try {
-            System.out.println("Device threaded created");
-            //cease this thread at start-up so it won't mess up with the 
+            System.out.println(TAG + "Device threaded created");
+            //cease this delay at start-up so it won't mess up with the main thread
             Thread.sleep(2000);
+
+            input = new InputStreamReader(deviceSocket.getInputStream());
+            buffer = new BufferedReader(input);
+
             while (true) {
-                input = new InputStreamReader(deviceSocket.getInputStream());
-                buffer = new BufferedReader(input);
-                //Here we listen for the Alaram message from the device machine
-                System.out.println("Device Thread: ready to listen");
+                System.out.println(TAG + "Ready to listen");
                 String msgFromDevice = buffer.readLine();
                 if (msgFromDevice.contains("alarm")) {
-                    System.out.println("Device Thread: Alarm " + msgFromDevice);
-                    SendEmail send = new SendEmail();
-                    send.sending();
+                    System.out.println(TAG + "Alarm -  " + msgFromDevice);
+                    EmailNotification email = new EmailNotification();
+                    email.send();
                     r.writeToFile("House", "alarm");
-                    
+                    mts.sendToAllServerThreads(msgFromDevice);
                 } else {
                     String[] deviceMessageArray = msgFromDevice.split(":");
                     String device = deviceMessageArray[0];
                     String state = deviceMessageArray[1];
                     dbq.updateDataBase(device, state);
+                    String allStatus = mts.getAllState();
+                    mts.sendToAllServerThreads(allStatus);
                 }
-                multi.sendToAllServerThreads(msgFromDevice);
+                
             }
         } catch (InterruptedException ex) {
             Logger.getLogger(DeviceThread.class.getName()).log(Level.SEVERE, null, ex);

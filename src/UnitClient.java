@@ -87,7 +87,7 @@ public class UnitClient {
         @Override
         public void run() {
             while (true) {
-                System.out.println("Device handler, input: ");
+                System.out.println("Unit handler, input: ");
                 if (sc.hasNext()) {
                     pw.println(sc.next());
                 }
