@@ -24,8 +24,11 @@ public class UnitClient {
 
         try {
             client = new Socket(InetAddress.getLocalHost(), portnumber);
+            client.setKeepAlive(true);
+            client.setSoTimeout(0);
             System.out.println("Client socket is created "
                     + client.getRemoteSocketAddress());
+            System.out.println("Socket kept alive: " + client.getKeepAlive());
             clientOut = client.getOutputStream();
             pw = new PrintWriter(clientOut, true);
             clientIn = client.getInputStream();

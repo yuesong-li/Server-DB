@@ -86,7 +86,7 @@ public class DatabaseQuery {
             String query = "UPDATE devices SET deviceState='" + state
                     + "' WHERE deviceName='" + device + "'";
             st.executeUpdate(query);
-            System.out.println(TAG + "Database updated : " + device + " : " + state);
+            System.out.println(TAG + "Database updated : " + device + ":" + state);
             con.close();
         } catch (Exception e) {
             e.printStackTrace();

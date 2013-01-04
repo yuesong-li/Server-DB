@@ -2,8 +2,6 @@
 import java.io.*;
 import java.net.*;
 import java.util.ArrayList;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 
 /*
@@ -66,10 +64,12 @@ public class MultiThreadedServer extends Thread {
                  */
                 if (deviceClientSocket == null) {
                     deviceClientSocket = deviceServerSocket.accept();
+                    deviceClientSocket.setKeepAlive(true);
                     System.out
-                            .println("\n"+TAG + "Connection with house established. Running on : "
+                            .println("\n" + TAG + "Connection with house established. Running on : "
                             + deviceClientSocket
                             .getRemoteSocketAddress());
+                    System.out.println(TAG + "Device socket kept alive: " + deviceClientSocket.getKeepAlive());
                     DeviceThread device = new DeviceThread(deviceClientSocket, this);
                     device.start();
                     /*
@@ -94,8 +94,12 @@ public class MultiThreadedServer extends Thread {
                  * connection has been made with the house.
                  */ else {
                     unitClientSocket = unitServerSocket.accept();
+                    unitClientSocket.setKeepAlive(true);
+                    unitClientSocket.setSoTimeout(0);
                     System.out.println(TAG + "Client accepted. Client : "
                             + unitClientSocket.getRemoteSocketAddress());
+                    System.out.println(TAG + "Unit socket kept alive: "
+                            + unitClientSocket.getKeepAlive());
 
                     String devicesStatus = getAllState();
                     Server server = new Server(unitClientSocket, this, devicesStatus);
@@ -162,7 +166,7 @@ public class MultiThreadedServer extends Thread {
     public synchronized void sendToDevice(String unitRequest) {
         System.out.println(TAG + "request from server-thread - " + unitRequest);
         deviceWriter.println(unitRequest);
-        
+
 //        try {
 //            Thread.sleep(1000);
 //        } catch (InterruptedException ex) {

@@ -1,7 +1,5 @@
 
 import java.util.Properties;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.mail.AuthenticationFailedException;
 import javax.mail.Authenticator;
 import javax.mail.Message.RecipientType;
@@ -19,13 +17,14 @@ import javax.mail.internet.MimeMessage;
  */
 /**
  *
- * @author Mathias Olsson, Hanna Persson, Zakir Hossain In here we send email to
+ * @author Mathias Olsson, Hanna Persson, Zakir Hossain In here we send email to1
  * the admin, when an alarm has accured
  *
  */
 public class EmailNotification {
 
-    String to = "flightreservationsystemhkr@gmail.com";
+    String to1 = "tvince1020@gmail.com";
+    String to2 = "myf3156789@gmail.com";
     String from = "flightreservationsystemhkr@gmail.com";
     String host = "localhost";
     String password = "frs@mark&li";
@@ -41,14 +40,16 @@ public class EmailNotification {
             props.setProperty("mail.smtp.starttls.enable", "true");
 
             InternetAddress fromAddress = new InternetAddress(from);
-            InternetAddress ToAddress = new InternetAddress(to);
+            InternetAddress[] ToAddress = new InternetAddress[2];
+            ToAddress[0] = new InternetAddress(to1);
+            ToAddress[1] = new InternetAddress(to2);
 
-            Authenticator auth = new EmailNotification.SMTPAuthenticator(to, password);
+            Authenticator auth = new EmailNotification.SMTPAuthenticator(from, password);
 
             Session session = Session.getInstance(props, auth);
             MimeMessage message = new MimeMessage(session);
             message.setFrom(fromAddress);
-            message.setRecipient(RecipientType.TO,
+            message.addRecipients(RecipientType.TO,
                     ToAddress);
             message.setSubject("Alarm");
             message.setText("Dear admin,"

@@ -49,7 +49,6 @@ public class Server extends Thread {
          * Units.
          */
         try {
-
             br = new BufferedReader(new InputStreamReader(
                     clientSocket.getInputStream()));
             pw = new PrintWriter(clientSocket.getOutputStream(), true);
@@ -65,13 +64,22 @@ public class Server extends Thread {
                     //System.out.println("Server - Sending the status to unit");
                     String deviceStates = mts.getAllState();
                     pw.println(deviceStates);
+                } else if (unitRequest.equals("!")) {
+                    //TEST CASE: received when android is disconnected
+                    System.out.println(TAG + "Throwing IO exception");
+                    throw new IOException();
+//                    mts.threadList.remove(this);
+//                    System.out.println(TAG + "Number of unit conns: " + mts.threadList.size());
+//                    System.out.println(TAG + "Client disconnected...");
                 } else {
                     verifyRequest(unitRequest);
                     row.writeToFile(userAndPass, unitRequest);
                 }
             }
         } catch (IOException e) {
-            System.out.println(TAG + "Failed in creating streams!");
+            mts.threadList.remove(this);
+            System.out.println(TAG + "Number of unit conns: " + mts.threadList.size());
+            System.out.println(TAG + "Client disconnected...");
             System.out.println(e.getMessage());
         }
     }
@@ -137,7 +145,7 @@ public class Server extends Thread {
             if (unitRequest.contains("temp")) {
                 mts.sendToDevice(unitRequest);
                 System.out.println(TAG + "sending the following from server to device : " + unitRequest);
-            } else {
+            } else if (unitRequest.contains(":")) {
                 this.unitRequest = unitRequest.split(":");
                 device = this.unitRequest[0].trim();
                 command = this.unitRequest[1].trim();
@@ -155,6 +163,8 @@ public class Server extends Thread {
                         mts.sendToDevice(unitRequest);
                     }
                 }
+            }else{
+                //ignore the invalid requests
             }
         }
     }
