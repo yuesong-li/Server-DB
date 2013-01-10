@@ -142,7 +142,7 @@ public class Server extends Thread {
          * Otherwise, verify it first with DB.
          */
         if (unitRequest != null) {
-            if (unitRequest.contains("temp")) {
+            if (unitRequest.equals("temp")) {
                 mts.sendToDevice(unitRequest);
                 System.out.println(TAG + "sending the following from server to device : " + unitRequest);
             } else if (unitRequest.contains(":")) {

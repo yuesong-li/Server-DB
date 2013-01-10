@@ -57,12 +57,28 @@ public class DeviceThread extends Thread {
                     r.writeToFile("House", "alarm");
                     mts.sendToAllServerThreads(msgFromDevice);
                 } else {
-                    String[] deviceMessageArray = msgFromDevice.split(":");
-                    String device = deviceMessageArray[0];
-                    System.out.println(TAG + "device: " + device);
-                    String state = deviceMessageArray[1];
-                    System.out.println(TAG + "state: " + state);
-                    dbq.updateDataBase(device, state);
+                    if (msgFromDevice.contains(",")) {
+                        String[] allDeviceStates = null;
+                        allDeviceStates = msgFromDevice.split(",");
+                        String[] deviceMessageArray;
+                        String device;
+                        String state;
+                        for (int i = 0; i < allDeviceStates.length; i++) {
+                            deviceMessageArray = allDeviceStates[i].split(":");
+                            device = deviceMessageArray[0];
+                            System.out.println(TAG + "device: " + device);
+                            state = deviceMessageArray[1];
+                            System.out.println(TAG + "state: " + state);
+                            dbq.updateDataBase(device, state);
+                        }
+                    } else {
+                        String[] deviceMessageArray = msgFromDevice.split(":");
+                        String device = deviceMessageArray[0];
+                        System.out.println(TAG + "device: " + device);
+                        String state = deviceMessageArray[1];
+                        System.out.println(TAG + "state: " + state);
+                        dbq.updateDataBase(device, state);
+                    }
                     String allStatus = mts.getAllState();
                     mts.sendToAllServerThreads(allStatus);
                 }
