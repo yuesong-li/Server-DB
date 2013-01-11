@@ -52,10 +52,21 @@ public class DeviceThread extends Thread {
                 String msgFromDevice = buffer.readLine();
                 if (msgFromDevice.contains("alarm")) {
                     System.out.println(TAG + "Alarm -  " + msgFromDevice);
+                    //update database
+                    String[] deviceMessageArray = msgFromDevice.split(":");
+                    String device = deviceMessageArray[0];
+                    System.out.println(TAG + "device: " + device);
+                    String state = deviceMessageArray[1];
+                    System.out.println(TAG + "state: " + state);
+                    dbq.updateDataBase(device, state);
+                    //send email notification
                     EmailNotification email = new EmailNotification();
                     email.send();
+                    //write to log file
                     r.writeToFile("House", msgFromDevice);
-                    mts.sendToAllServerThreads(msgFromDevice);
+                    //notify units
+                    String allStatus = mts.getAllState();
+                    mts.sendToAllServerThreads(allStatus);
                 } else {
                     if (msgFromDevice.contains(",")) {
                         String[] allDeviceStates = null;
