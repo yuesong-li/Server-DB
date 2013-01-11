@@ -54,7 +54,7 @@ public class DeviceThread extends Thread {
                     System.out.println(TAG + "Alarm -  " + msgFromDevice);
                     EmailNotification email = new EmailNotification();
                     email.send();
-                    r.writeToFile("House", "alarm");
+                    r.writeToFile("House", msgFromDevice);
                     mts.sendToAllServerThreads(msgFromDevice);
                 } else {
                     if (msgFromDevice.contains(",")) {
@@ -82,7 +82,6 @@ public class DeviceThread extends Thread {
                     String allStatus = mts.getAllState();
                     mts.sendToAllServerThreads(allStatus);
                 }
-
             }
         } catch (InterruptedException ex) {
             Logger.getLogger(DeviceThread.class.getName()).log(Level.SEVERE, "InE", ex);

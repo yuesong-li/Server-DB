@@ -78,8 +78,8 @@ public class Server extends Thread {
             }
         } catch (IOException e) {
             mts.threadList.remove(this);
-            System.out.println(TAG + "Number of unit conns: " + mts.threadList.size());
             System.out.println(TAG + "Client disconnected...");
+            System.out.println(TAG + "Number of unit conns: " + mts.threadList.size());
             System.out.println(e.getMessage());
         }
     }
@@ -163,7 +163,7 @@ public class Server extends Thread {
                         mts.sendToDevice(unitRequest);
                     }
                 }
-            }else{
+            } else {
                 //ignore the invalid requests
             }
         }
