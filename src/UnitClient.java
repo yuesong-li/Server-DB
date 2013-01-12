@@ -8,6 +8,15 @@ import java.io.PrintWriter;
 import java.net.InetAddress;
 import java.net.Socket;
 
+
+/*
+ **********************************************************************************************
+ * Authors : Hanna Persson, Zakir Hossain, Mathias Olsson
+ * 
+ * Class : UnitClient 				
+ * 							
+ * ********************************************************************************************
+ */
 public class UnitClient {
 
     static int portnumber = 8888;

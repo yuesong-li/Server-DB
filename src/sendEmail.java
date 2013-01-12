@@ -14,14 +14,14 @@ import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 
 /*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
-/**
- *
- * @author Mathias Olsson, Hanna Persson, Zakir Hossain In here we send email to
+ **********************************************************************************************
+ * Authors : Hanna Persson, Zakir Hossain, Mathias Olsson
+ * 
+ * Class : sendEmail 	
+ * In here we send email to
  * the admin, when an alarm has accured
- *
+ * 							
+ * ********************************************************************************************
  */
 public class sendEmail {
 

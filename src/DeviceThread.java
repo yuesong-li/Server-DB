@@ -9,12 +9,12 @@ import javax.mail.MessagingException;
 import javax.mail.internet.AddressException;
 
 /*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
-/**
- *
- * @author Hanna
+ **********************************************************************************************
+ * Authors : Zakir Hossain, Mathias Olsson, Hanna Persson, 
+ * 
+ * Class : DeviceThread 				
+ * 							
+ * ********************************************************************************************
  */
 public class DeviceThread extends Thread {
 

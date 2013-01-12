@@ -16,9 +16,13 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 
-/**
- *
- * @author Hanna
+/*
+ **********************************************************************************************
+ * Authors : Hanna Persson, Zakir Hossain, Mathias Olsson
+ * 
+ * Class : readOrWriteFromFile 				
+ * 							
+ * ********************************************************************************************
  */
 public class readOrWriteFromFile {
 // This class is under construction, will be more modified

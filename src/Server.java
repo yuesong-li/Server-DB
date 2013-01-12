@@ -17,8 +17,8 @@ import javax.mail.internet.AddressException;
  * 
  * Class : Server
  * 
- * Class functionality :     The server class's function is to communicate 
- * 							with the Units that connect with the server.
+ * Class functionality : The server class's function is to communicate 
+ * with the Units that connect with the server.
  * 							
  * ***********************************************************************
  */

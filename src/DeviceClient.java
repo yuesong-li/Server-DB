@@ -9,6 +9,14 @@ import java.net.InetAddress;
 import java.net.Socket;
 import java.util.Scanner;
 
+/*
+ **********************************************************************************************
+ * Authors : Zakir Hossain, Mathias Olsson, Hanna Persson, 
+ * 
+ * Class : DeviceClient					
+ * 							
+ * ********************************************************************************************
+ */
 public class DeviceClient {
 
     static int portNumber = 7777;
@@ -16,7 +24,7 @@ public class DeviceClient {
     String msg;
     static DeviceInputHandler deviceHandler = null;
     static PrintWriter pw = null;
-    
+
     public static void main(String[] args) {
 
         try {
@@ -42,7 +50,7 @@ public class DeviceClient {
                             + msgFromServer
                             + "\nSending it back to simulate successful command.");
                     pw.println(msgFromServer);
-                }else{
+                } else {
                     if (deviceHandler == null) {
                         deviceHandler = new DeviceInputHandler();
                         deviceHandler.start();
@@ -58,6 +66,7 @@ public class DeviceClient {
         }
 
     }
+
     static class DeviceInputHandler extends Thread {
 
         Scanner sc = new Scanner(System.in);
