@@ -23,8 +23,8 @@ import javax.mail.internet.MimeMessage;
  */
 public class EmailNotification {
 
-    String to1 = "tvince1020@gmail.com";
-    String to2 = "myf3156789@gmail.com";
+    String to1 = "yuesong.li1020@gmail.com";
+    //String to2 = "myf3156789@gmail.com";
     String from = "flightreservationsystemhkr@gmail.com";
     String host = "localhost";
     String password = "frs@mark&li";
@@ -42,7 +42,7 @@ public class EmailNotification {
             InternetAddress fromAddress = new InternetAddress(from);
             InternetAddress[] ToAddress = new InternetAddress[2];
             ToAddress[0] = new InternetAddress(to1);
-            ToAddress[1] = new InternetAddress(to2);
+            //ToAddress[1] = new InternetAddress(to2);
 
             Authenticator auth = new EmailNotification.SMTPAuthenticator(from, password);
 
@@ -50,7 +50,7 @@ public class EmailNotification {
             MimeMessage message = new MimeMessage(session);
             message.setFrom(fromAddress);
             message.addRecipients(RecipientType.TO,
-                    ToAddress);
+                    to1);
             message.setSubject("Alarm");
             message.setText("Dear admin,"
                     + "\n\n The alarm started and it can mean many things but you should be worried");

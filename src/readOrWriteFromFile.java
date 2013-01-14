@@ -63,9 +63,9 @@ public class readOrWriteFromFile {
             Date date = new Date();
             String currentDate = dateFormat.format(date);
             if (req.equalsIgnoreCase("alarm")) {
-                fromUnit = "User: " + user + " Alarm was triggered Time: " + currentTime + " Date: " + currentDate;
+                fromUnit = "User: " + user + " Alarm was triggered on " + currentDate;
             } else {
-                fromUnit = users + " wants to " + req + " Time " + currentTime + " Date " + currentDate;
+                fromUnit = users + " changed " + req + " On " + currentDate;
             }
             String[] textTromFile = save.split("#");
             for (int i = 0; i < textTromFile.length; i++) {
