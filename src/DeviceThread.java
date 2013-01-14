@@ -22,7 +22,7 @@ public class DeviceThread extends Thread {
     BufferedReader buffer = null;
     InputStreamReader input = null;
     MultiThreadedServer multi = null;
-    readOrWriteFromFile r = new readOrWriteFromFile();
+    ReadOrWriteFromFile r = new ReadOrWriteFromFile();
 
     public DeviceThread(Socket deviceSocket, MultiThreadedServer mts) {
         this.multi = mts;
@@ -41,7 +41,7 @@ public class DeviceThread extends Thread {
                 //Here we listen for the Alaram message from the device machine
                 String alarm = buffer.readLine();
                 System.out.println("******Alarm******" + alarm);
-                sendEmail send = new sendEmail();
+                SendEmail send = new SendEmail();
                 send.sending();
                 r.writeToFile("House", "alarm");
                 multi.sendToAllServerThreads(alarm);
