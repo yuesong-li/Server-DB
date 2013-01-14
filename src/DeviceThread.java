@@ -24,7 +24,7 @@ public class DeviceThread extends Thread {
     BufferedReader buffer = null;
     InputStreamReader input = null;
     MultiThreadedServer mts = null;
-    readOrWriteFromFile r = new readOrWriteFromFile();
+    ReadOrWriteFromFile r = new ReadOrWriteFromFile();
     DatabaseQuery dbq = new DatabaseQuery();
 
     public DeviceThread(Socket deviceSocket, MultiThreadedServer mts) {

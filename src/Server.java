@@ -29,7 +29,7 @@ public class Server extends Thread {
     String[] unitRequest = null;
     String device, command, dbResponse;
     String userAndPass = null;
-    readOrWriteFromFile row = new readOrWriteFromFile();
+    ReadOrWriteFromFile row = new ReadOrWriteFromFile();
     /*
      * Take the socket that was connected to the multi-threaded server and save
      * it so that we can use it. And save a reference to the multi-threaded
