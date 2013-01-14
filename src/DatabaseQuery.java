@@ -58,7 +58,10 @@ public class DatabaseQuery {
             query = "SELECT * FROM users";
             rs = st.executeQuery(query);
             if (!rs.next()) {
-                query = "INSERT INTO `users` (`userid`, `username`, `password`, `access`) VALUES (1, 'HouseMaster', 'HouseMaster', 'admin'),(2, 'HousePerson', 'HousePerson', 'low'), (3, 'AnotherPerson', 'AnotherPerson', 'high')";
+                String houseMaster = cryptPassword("HouseMaster");
+                String housePerson = cryptPassword("HousePerson");
+                String anotherPerson = cryptPassword("AnotherPerson");
+                query = "INSERT INTO `userss` (`userid`, `username`, `password`, `access`) VALUES (1, 'HouseMaster','"+houseMaster+"','admin'),(2, 'HousePerson','"+housePerson+"', 'low'), (3, 'AnotherPerson','"+anotherPerson+"', 'high')";
                 st.executeUpdate(query);
                 System.out.println(TAG + "Data Inserted in users Table");
             }
@@ -140,12 +143,27 @@ public class DatabaseQuery {
                 dbAccess = rs.getString("access");
             }
             System.out.println(TAG + "Result from db : " + dbUser + " " + dbPass);
-            if (user.equals(dbUser) && pass.equals(dbPass)) {
+            if (user.equals(dbUser) && check(pass,dbPass)) {
                 return dbAccess;
             }
         } catch (Exception e) {
             System.out.println(TAG + "Error encountered. : " + e.getMessage());
         }
         return "Fail";
+    }
+    
+     private String cryptPassword(String password) {
+        String hashed = PasswordCrypt.hashpw(password, PasswordCrypt.gensalt(12));
+        return hashed;
+    }
+
+    private boolean check(String candi, String hash) {
+        boolean status = false;
+        if (PasswordCrypt.checkpw(candi, hash)) {           
+            status=true;
+        } else {            
+            status=false;
+        }
+        return status;
     }
 }
